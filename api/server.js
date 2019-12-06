@@ -83,9 +83,30 @@ server.delete('/:id', (req, res) => {
         })
 })
 
+// endpoints for Actions
 
+// POST a new action
+server.post('/:id/actions', (req, res) => {
+    const id = req.params.project_id;
+    const { description, notes } = req.body;
 
-
+    if (!description || !notes) {
+        res.status(400).json({ message: 'Please provide a description and notes for the action' })
+    } else {
+        Actions.insert(id, req.body)
+            .then(action => {
+                if (action) {
+                    res.status(201).json({ message: 'The action was created', action })
+                } else {
+                    res.status(404).json({ message: 'The project with that ID does not exist' })
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                res.status(500).json({ error: 'There was an error while saving the action to the database' })
+            })
+    }
+})
 
 
 
