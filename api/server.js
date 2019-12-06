@@ -87,13 +87,12 @@ server.delete('/:id', (req, res) => {
 
 // POST a new action
 server.post('/:id/actions', (req, res) => {
-    const id = req.params.project_id;
     const { description, notes } = req.body;
 
     if (!description || !notes) {
         res.status(400).json({ message: 'Please provide a description and notes for the action' })
     } else {
-        Actions.insert(id, req.body)
+        Actions.insert(req.body)
             .then(action => {
                 if (action) {
                     res.status(201).json({ message: 'The action was created', action })
@@ -103,12 +102,62 @@ server.post('/:id/actions', (req, res) => {
             })
             .catch(error => {
                 console.log(error);
-                res.status(500).json({ error: 'There was an error while saving the action to the database' })
+                res.status(500).json({ error: 'There was an error while saving the action to the database' });
             })
     }
 })
 
+// GET individual actions by ID
+server.get('/:id/actions', (req, res) => {
+    const id = req.params.id;
 
+    if (id === id) {
+        Actions.get(id)
+            .then(actions => {
+                res.status(200).json(actions);
+            })
+            .catch(error => {
+                console.log(error);
+                res.status(500).json({ error: 'The actions info could not be retrieved' })
+            })
+    } else {
+        res.status(404).json({ message: 'The project with that ID does not exist' })
+    }
+})
+
+// PUT request to edit an action
+server.put('/:id/actions', (req, res) => {
+    const edits = req.body;
+    Actions.update(req.params.id, edits)
+        .then(action => {
+            if (action) {
+                res.status(200).json(action);
+            } else {
+                res.status(404).json({ message: 'The project could not be found' });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'Error updating the action' });
+        })
+})
+
+// DELETE an action
+
+server.delete('/:id/actions', (req, res) => {
+    Actions.remove(req.params.id)
+        .then(removed => {
+            if (removed) {
+                res.status(200).json({ message: 'Action successfully deleted', removed });
+            } else {
+                res.status(404).json({ message: 'The action with that ID does not exist' });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'The action could not be deleted' });
+        })
+})
 
 
 module.exports = server;
