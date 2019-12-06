@@ -9,37 +9,79 @@ const server = express();
 server.use(helmet());
 server.use(express.json());
 
-server.get('/', (req, res) => {
-    const message = process.env.MSG || "Hello Sprint";
+// endpoints for Projects
 
-    Projects.find()
+// GET all projects
+server.get('/', (req, res) => {
+    Projects.get()
         .then(projects => {
-            res.status(200).json({ message, projects });
+            res.status(200).json(projects);
         })
         .catch(error => {
-            console.error('\nERROR', error);
-            res.status(500).json({ error: 'Cannot retrieve the projects' });
-        });
-});
-
-server.get('/', (req, res) => {
-    const messageTwo = process.env.MSG || "Hello Sprint";
-
-    Actions.find()
-        .then(actions => {
-            res.status(200).json({ messageTwo, actions });
+            console.log(error);
+            res.status(500).json({ message: 'Error retrieving the projects' })
+        })
+})
+// GET project by id
+server.get('/:id', (req, res) => {
+    Projects.get(req.params.id)
+        .then(project => {
+            if (project) {
+                res.status(200).json(project);
+            } else {
+                res.status(404).json({ message: 'Project not found' });
+            }
         })
         .catch(error => {
-            console.error('\nERROR', error);
-            res.status(500).json({ error: 'Cannot retrieve the actions' });
-        });
-});
+            console.log(error);
+            res.status(500).json({ message: 'Error retrieving the project' });
+        })
+})
 
+// POST a new project
+server.post('/', (req, res) => {
+    Projects.insert(req.body)
+        .then(project => {
+            res.status(201).json(project);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error adding the project" });
+        })
+})
 
+// PUT request to edit a project
+server.put('/:id', (req, res) => {
+    const edits = req.body;
+    Projects.update(req.params.id, edits)
+        .then(project => {
+            if (project) {
+                res.status(200).json(project);
+            } else {
+                res.status(404).json({ message: 'The project could not be found' });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'Error updating the project' });
+        })
+})
 
-
-
-
+// DELETE a project
+server.delete('/:id', (req, res) => {
+    Projects.remove(req.params.id)
+        .then(removed => {
+            if (removed) {
+                res.status(200).json({ message: 'Project successfully deleted', removed });
+            } else {
+                res.status(404).json({ message: 'The project with that ID does not exist' });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'The project could not be deleted' });
+        })
+})
 
 
 
