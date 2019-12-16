@@ -40,13 +40,23 @@ Demonstrate your understanding of this Sprint's concepts by answering the follow
 
 - [ ] Mention two parts of Express that you learned about this week.
 
+Express is a framework that helps with routing. Express also gives you access to middleware. 
+
 - [ ] Describe Middleware?
+
+Middleware is a set of functions that have access to the req object, res object, and the next middleware function in the req-res cycle of an application.
 
 - [ ] Describe a Resource?
 
+A resource is basically a module loading manager. It simplifies loading modules by using "process".
+
 - [ ] What can the API return to help clients know if a request was successful?
 
+A response code and message telling them that their request worked. Or an error code and message telling them that it didn't.
+
 - [ ] How can we partition our application into sub-applications?
+
+By moving certain endpoints from the server to a router.
 
 ## Minimum Viable Product
 
